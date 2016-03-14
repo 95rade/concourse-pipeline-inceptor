@@ -1,0 +1,13 @@
+---
+jobs:
+{{all_jobs}}
+
+resources:
+- name: template-repo
+  type: git
+  source:
+    uri: https://github.com/lsilvapvt/concourse-sand-box
+    branch: master
+
+groups:
+{{all_groups}}

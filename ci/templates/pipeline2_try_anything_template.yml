@@ -1,0 +1,26 @@
+- name: deploy-{{env_id}}
+  plan:
+  - aggregate:
+    - get: template-repo
+      trigger: true
+  - task: dummy-task
+    file: template-repo/ci/tasks/dummy-task.yml
+
+- name: smoke-test-{{env_id}}
+  plan:
+  - aggregate:
+    - get: template-repo
+      trigger: true
+      passed: [deploy-{{env_id}}]
+  - task: dummy-task
+    file: template-repo/ci/tasks/dummy-task.yml
+
+
+- name: acceptance-test-{{env_id}}
+  plan:
+  - aggregate:
+    - get: template-repo
+      trigger: true
+      passed: [smoke-test-{{env_id}}]
+  - task: dummy-task
+    file: template-repo/ci/tasks/dummy-task.yml

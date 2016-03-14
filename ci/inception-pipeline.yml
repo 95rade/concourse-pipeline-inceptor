@@ -1,0 +1,57 @@
+---
+jobs:
+- name: create-Staging-Prod-Pipeline
+  plan:
+  - aggregate:
+    - get: template-repo
+      trigger: true
+    # - get: slack
+    #   trigger: false
+  - task: test-task
+    config:
+      platform: linux
+      image: docker:///silval/ubuntu-bosh-spruce-cf-fly
+      inputs:
+        - name: template-repo
+      run:
+        path: template-repo/ci/tools/inception.sh
+        args:
+          - staging_prod_pipeline.yml
+          - http://192.168.100.4:8080
+          - admin
+          - admin
+          - Staging-Production
+      outputs:
+        - name: pipeline
+
+- name: create-TryAnything-Staging-Prod-Pipeline
+  plan:
+  - aggregate:
+    - get: template-repo
+      trigger: true
+    # - get: slack
+    #   trigger: false
+  - task: test-task
+    config:
+      platform: linux
+      image: docker:///silval/ubuntu-bosh-spruce-cf-fly
+      inputs:
+        - name: template-repo
+      run:
+        path: template-repo/ci/tools/inception.sh
+        args:
+          - try_staging_prod_pipeline.yml
+          - http://192.168.100.4:8080
+          - admin
+          - admin
+          - TryAnything-Staging-Production
+      outputs:
+        - name: pipeline
+
+resources:
+- name: template-repo
+  type: git
+  source:
+    uri: git@github.com:lsilvapvt/concourse-sand-box.git
+    branch: master
+    private_key: {{github-private-key}}
