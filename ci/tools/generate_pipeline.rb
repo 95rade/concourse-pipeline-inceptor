@@ -1,6 +1,6 @@
 require 'yaml'
 
-execution_root_dir="../../"
+execution_root_dir="../../../"
 
 # read pipeline definition file
 pipeline_def = YAML.load_file(execution_root_dir+ARGV[0])
