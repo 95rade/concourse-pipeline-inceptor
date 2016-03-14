@@ -5,7 +5,7 @@ jobs:
   - aggregate:
     - get: inceptor-repo
       trigger: true
-    - get: inceptor-repo
+    - get: template-repo
       trigger: true
   - task: create-Staging-Prod-Pipeline-task
     config:

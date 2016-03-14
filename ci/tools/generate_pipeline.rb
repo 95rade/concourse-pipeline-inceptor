@@ -3,7 +3,7 @@ require 'yaml'
 execution_root_dir="../../"
 
 # read pipeline definition file
-pipeline_def = YAML.load_file(ARGV[0])
+pipeline_def = YAML.load_file(execution_root_dir+ARGV[0])
 
 # retrieve pipeline YML main template
 main_file = execution_root_dir+pipeline_def["pipeline"]["main_template"]
