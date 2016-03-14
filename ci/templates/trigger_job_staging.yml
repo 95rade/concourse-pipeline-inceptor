@@ -1,7 +1,0 @@
-
-- name: trigger-staging
-  plan:
-  - aggregate:
-    - get: template-repo
-      trigger: false
-      passed: [acceptance-test-{{env_id}}]

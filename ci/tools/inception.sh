@@ -2,12 +2,11 @@
 set -x
 
 echo "Running inception of pipeline"
-cd template-repo/ci/tools
+cd inceptor-repo/ci/tools
 ruby generate_pipeline.rb $1
 cd -
-mkdir pipeline
 ls -la
-mv template-repo/ci/templates/pipeline.yml pipeline/pipeline.yml
+ls -la pipeline
 
 # fly -t $2 sync
 fly -t local login -c $2

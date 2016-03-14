@@ -3,20 +3,21 @@ jobs:
 - name: create-Staging-Prod-Pipeline
   plan:
   - aggregate:
-    - get: template-repo
+    - get: inceptor-repo
       trigger: true
-    # - get: slack
-    #   trigger: false
-  - task: test-task
+    - get: inceptor-repo
+      trigger: true
+  - task: create-Staging-Prod-Pipeline-task
     config:
       platform: linux
       image: docker:///silval/ubuntu-bosh-spruce-cf-fly
       inputs:
+        - name: inceptor-repo
         - name: template-repo
       run:
-        path: template-repo/ci/tools/inception.sh
+        path: inceptor-repo/ci/tools/inception.sh
         args:
-          - staging_prod_pipeline.yml
+          - template-repo/ci/stubs/pipeline/staging_prod_pipeline.yml
           - http://192.168.100.4:8080
           - admin
           - admin
@@ -27,20 +28,22 @@ jobs:
 - name: create-TryAnything-Staging-Prod-Pipeline
   plan:
   - aggregate:
+    - get: inceptor-repo
+      trigger: true
+  - aggregate:
     - get: template-repo
       trigger: true
-    # - get: slack
-    #   trigger: false
-  - task: test-task
+  - task: create-TryAnything-Staging-Prod-Pipeline-task
     config:
       platform: linux
       image: docker:///silval/ubuntu-bosh-spruce-cf-fly
       inputs:
+        - name: inceptor-repo
         - name: template-repo
       run:
-        path: template-repo/ci/tools/inception.sh
+        path: inceptor-repo/ci/tools/inception.sh
         args:
-          - try_staging_prod_pipeline.yml
+          - template-repo/ci/stubs/pipeline/try_staging_prod_pipeline.yml
           - http://192.168.100.4:8080
           - admin
           - admin
@@ -49,9 +52,14 @@ jobs:
         - name: pipeline
 
 resources:
-- name: template-repo
+- name: inceptor-repo
   type: git
   source:
     uri: https://github.com/lsilvapvt/concourse-pipeline-inceptor
+    branch: master
+- name: template-repo
+  type: git
+  source:
+    uri: https://github.com/lsilvapvt/concourse-pipeline-inceptor-templates
     branch: master
 #    private_key: { { github-private-key } }

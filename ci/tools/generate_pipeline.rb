@@ -1,13 +1,12 @@
 require 'yaml'
 
-templates_directory="../templates/"
-stubs_directory="../stubs/"
+execution_root_dir="../../"
 
 # read pipeline definition file
-pipeline_def = YAML.load_file(stubs_directory+ARGV[0])
+pipeline_def = YAML.load_file(ARGV[0])
 
 # retrieve pipeline YML main template
-main_file = templates_directory+pipeline_def["pipeline"]["main_template"]
+main_file = execution_root_dir+pipeline_def["pipeline"]["main_template"]
 outdata = File.read(main_file)
 
 # define auxiliar variables
@@ -36,12 +35,12 @@ pipeline_def["pipeline"]["groups"].each_with_index do |group, index|
     # do the trigger job between groups
     puts "Generating trigger jobs for group "+group["name"]
     # get the trigger template content
-    trigger_tmplt = File.read(templates_directory+group["trigger_job_template"])
+    trigger_tmplt = File.read(execution_root_dir+group["trigger_job_template"])
     group_output.concat(trigger_tmplt.gsub(/{{env_id}}/, last_group_env_id))
   end
 
   # read pipeline template file for the group
-  staging_tmplt = File.read(templates_directory+group["template"])
+  staging_tmplt = File.read(execution_root_dir+group["template"])
 
   # iterate over all environments withing the group (e.g. all Production environmetns)
   group["environments"].each do |item|
@@ -77,6 +76,6 @@ outdata = outdata.gsub(/{{all_groups}}/, YAML.dump(all_groups).gsub("---\n", '')
 
 outdata = outdata.gsub(/{{.*}}/, "")
 
-File.open(templates_directory+"pipeline.yml", 'w') do |out|
+File.open(execution_root_dir+"pipeline/pipeline.yml", 'w') do |out|
   out << outdata
 end
