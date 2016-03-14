@@ -52,6 +52,6 @@ resources:
 - name: template-repo
   type: git
   source:
-    uri: git@github.com:lsilvapvt/concourse-sand-box.git
+    uri: https://github.com/lsilvapvt/concourse-pipeline-inceptor
     branch: master
-    private_key: {{github-private-key}}
+#    private_key: { { github-private-key } }
