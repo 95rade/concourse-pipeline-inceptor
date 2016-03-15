@@ -1,5 +1,30 @@
 ---
 jobs:
+- name: create-Sandbox-Dev-pipeline
+  plan:
+  - aggregate:
+    - get: inceptor-repo
+      trigger: true
+    - get: template-repo
+      trigger: true
+  - task: create-Sandbox-Dev-Pipeline-task
+    config:
+      platform: linux
+      image: docker:///silval/ubuntu-bosh-spruce-cf-fly
+      inputs:
+        - name: inceptor-repo
+        - name: template-repo
+      run:
+        path: inceptor-repo/ci/tools/inception.sh
+        args:
+          - template-repo/ci/stubs/pipeline/sandbox_dev_pipeline.yml
+          - http://192.168.100.4:8080
+          - admin
+          - admin
+          - Sandbox-Dev
+      outputs:
+        - name: pipeline
+
 - name: create-Staging-Prod-Pipeline
   plan:
   - aggregate:
