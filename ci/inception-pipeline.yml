@@ -36,10 +36,7 @@ jobs:
           - admin
           - admin
           - Staging-Production
-          - inceptor-repo/ci/pipelines/sandbox_dev_pipeline_creds.yml
-
-      outputs:
-        - name: pipeline
+          - template-repo/ci/stubs/pipeline/staging_prod_pipeline_creds.yml
 
 resources:
 - name: inceptor-repo
