@@ -52,8 +52,8 @@ pipeline_def["pipeline"]["groups"].each_with_index do |group, index|
      puts "Generating job for environment "+item["name"]
      # substitutes env name tokens/variables with env id
      tmp_tmplt = staging_tmplt.gsub(/{{env_id}}/, item["name"])
-     tmp_tmplt = tmp_tmplt.gsub(/{{stage}}/, item["stage_id"])
-     tmp_tmplt = tmp_tmplt.gsub(/{{region}}/, item["region_id"])
+    #  tmp_tmplt = tmp_tmplt.gsub(/{{stage}}/, item["stage_id"])
+    #  tmp_tmplt = tmp_tmplt.gsub(/{{region}}/, item["region_id"])
      tmp_tmplt = tmp_tmplt.gsub(/{{passed_trigger_statement}}/, passed_trigger_statement)
      group_output.concat(tmp_tmplt)
      last_group_env_id=item["name"]
