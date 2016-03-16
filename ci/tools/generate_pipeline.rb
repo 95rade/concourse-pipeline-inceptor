@@ -28,7 +28,7 @@ pipeline_def["pipeline"]["groups"].each_with_index do |group, index|
   puts "Generating jobs for group "+group["name"]
 
   group_output = ""
-
+  passed_trigger_statement = ""
   all_group_jobs_list= Array.new
 
 
@@ -38,7 +38,10 @@ pipeline_def["pipeline"]["groups"].each_with_index do |group, index|
     puts "Generating trigger jobs for group "+group["name"]
     # get the trigger template content
     trigger_tmplt = File.read(execution_root_dir+group["trigger_job_template"])
+    trigger_name = "trigger_"+group["name"]
+    trigger_tmplt = trigger_tmplt.gsub(/{{trigger_name}}/, trigger_name)
     group_output.concat(trigger_tmplt.gsub(/{{env_id}}/, last_group_env_id))
+    passed_trigger_statement = "passed: ["+trigger_name+"]"
   end
 
   # read pipeline template file for the group
@@ -48,7 +51,11 @@ pipeline_def["pipeline"]["groups"].each_with_index do |group, index|
   group["environments"].each do |item|
      puts "Generating job for environment "+item["name"]
      # substitutes env name tokens/variables with env id
-     group_output.concat(staging_tmplt.gsub(/{{env_id}}/, item["name"]))
+     tmp_tmplt = staging_tmplt.gsub(/{{env_id}}/, item["name"])
+     tmp_tmplt = tmp_tmplt.gsub(/{{stage}}/, item["stage_id"])
+     tmp_tmplt = tmp_tmplt.gsub(/{{region}}/, item["region_id"])
+     tmp_tmplt = tmp_tmplt.gsub(/{{passed_trigger_statement}}/, passed_trigger_statement)
+     group_output.concat(tmp_tmplt)
      last_group_env_id=item["name"]
   end
 
@@ -72,7 +79,7 @@ outdata = outdata.gsub(/{{all_jobs}}/, all_jobs_output)
 outdata = outdata.gsub(/{{all_groups}}/, YAML.dump(all_groups).gsub("---\n", ''))
 # outdata = outdata.gsub(/{{all_groups}}/, all_staging_jobs_list.inspect)
 
-outdata = outdata.gsub(/{{.*}}/, "")
+# outdata = outdata.gsub(/{{.*}}/, "")
 
 File.open(execution_root_dir+"pipeline/pipeline.yml", 'w') do |out|
   out << outdata
