@@ -1,30 +1,5 @@
 ---
 jobs:
-- name: create-Sandbox-Dev-pipeline
-  plan:
-  - aggregate:
-    - get: inceptor-repo
-      trigger: true
-    - get: template-repo
-      trigger: true
-  - task: create-Sandbox-Dev-Pipeline-task
-    config:
-      platform: linux
-      image: docker:///silval/ubuntu-bosh-spruce-cf-fly
-      inputs:
-        - name: inceptor-repo
-        - name: template-repo
-      run:
-        path: inceptor-repo/ci/tools/inception.sh
-        args:
-          - template-repo/ci/stubs/pipeline/sandbox_dev_pipeline.yml
-          - http://192.168.100.4:8080
-          - admin
-          - admin
-          - Sandbox-Dev
-      outputs:
-        - name: pipeline
-
 - name: create-Staging-Prod-Pipeline
   plan:
   - aggregate:
@@ -32,7 +7,7 @@ jobs:
       trigger: true
     - get: template-repo
       trigger: true
-  - task: create-Staging-Prod-Pipeline-task
+  - task: build-pipeline-yml-task
     config:
       platform: linux
       image: docker:///silval/ubuntu-bosh-spruce-cf-fly
@@ -40,39 +15,29 @@ jobs:
         - name: inceptor-repo
         - name: template-repo
       run:
-        path: inceptor-repo/ci/tools/inception.sh
+        path: inceptor-repo/ci/tools/build_pipeline_yml.sh
         args:
           - template-repo/ci/stubs/pipeline/staging_prod_pipeline.yml
+      outputs:
+        - name: pipeline
+
+  - task: deploy-pipeline-yml-task
+    config:
+      platform: linux
+      image: docker:///silval/ubuntu-bosh-spruce-cf-fly
+      inputs:
+        - name: inceptor-repo
+        - name: template-repo
+        - name: pipeline
+      run:
+        path: inceptor-repo/ci/tools/update_pipeline.sh
+        args:
           - http://192.168.100.4:8080
           - admin
           - admin
           - Staging-Production
-      outputs:
-        - name: pipeline
+          - inceptor-repo/ci/pipelines/sandbox_dev_pipeline_creds.yml
 
-- name: create-TryAnything-Staging-Prod-Pipeline
-  plan:
-  - aggregate:
-    - get: inceptor-repo
-      trigger: true
-  - aggregate:
-    - get: template-repo
-      trigger: true
-  - task: create-TryAnything-Staging-Prod-Pipeline-task
-    config:
-      platform: linux
-      image: docker:///silval/ubuntu-bosh-spruce-cf-fly
-      inputs:
-        - name: inceptor-repo
-        - name: template-repo
-      run:
-        path: inceptor-repo/ci/tools/inception.sh
-        args:
-          - template-repo/ci/stubs/pipeline/try_staging_prod_pipeline.yml
-          - http://192.168.100.4:8080
-          - admin
-          - admin
-          - TryAnything-Staging-Production
       outputs:
         - name: pipeline
 
